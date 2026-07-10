@@ -237,7 +237,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Harta Startup-urilor Tech România 2024–2026</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"/>
@@ -246,165 +246,257 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-         display: flex; height: 100vh; overflow: hidden; background: #f8fafc; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex; height: 100dvh; overflow: hidden; background: #f8fafc;
+}
 
-  #map-container { flex: 1; position: relative; min-width: 0; display: flex; flex-direction: column; }
-  #map { flex: 1; }
+/* ── DESKTOP LAYOUT ───────────────────────────────────────── */
+#map-container {
+  flex: 1; position: relative; min-width: 0;
+  display: flex; flex-direction: column;
+}
+#map { flex: 1; }
 
-  /* TIMELINE BAR (bottom of map) */
-  #timeline {
-    background: white; border-top: 1px solid #e2e8f0;
-    padding: 10px 16px; display: flex; align-items: center; gap: 12px;
-    flex-shrink: 0; z-index: 500;
-  }
-  #timeline label { font-size: 11px; font-weight: 600; color: #475569; white-space: nowrap; }
-  .year-btns { display: flex; gap: 4px; }
-  .yr-btn {
-    padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0;
-    font-size: 11px; font-weight: 600; cursor: pointer; background: white;
-    color: #475569; transition: all 0.15s;
-  }
-  .yr-btn:hover { border-color: #3b82f6; color: #3b82f6; }
-  .yr-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-  #timeline-count {
-    font-size: 11px; color: #94a3b8; margin-left: auto; white-space: nowrap;
-  }
+/* TIMELINE */
+#timeline {
+  background: white; border-top: 1px solid #e2e8f0;
+  padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0; z-index: 500;
+}
+#timeline label { font-size: 11px; font-weight: 600; color: #475569; white-space: nowrap; }
+.year-btns { display: flex; gap: 4px; }
+.yr-btn {
+  padding: 5px 12px; border-radius: 20px; border: 1px solid #e2e8f0;
+  font-size: 11px; font-weight: 600; cursor: pointer; background: white;
+  color: #475569; transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.yr-btn:hover, .yr-btn:active { border-color: #3b82f6; color: #3b82f6; }
+.yr-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+#timeline-count { font-size: 11px; color: #94a3b8; margin-left: auto; white-space: nowrap; }
 
-  /* LEFT MAP PANEL */
+/* LEFT PANEL */
+#map-panel {
+  position: absolute; top: 12px; left: 12px; z-index: 1000;
+  background: white; border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  padding: 14px; width: 236px; max-height: calc(100% - 24px);
+  overflow-y: auto;
+}
+#map-panel h2 { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+.mp-sub { font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
+.sec-title {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: #94a3b8; margin: 10px 0 5px;
+}
+.leg-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 4px; cursor: pointer; border-radius: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.leg-row:hover, .leg-row:active { background: #f8fafc; }
+.leg-left { display: flex; align-items: center; gap: 7px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.leg-label { font-size: 11px; color: #334155; }
+.leg-count {
+  font-size: 11px; font-weight: 600; color: #1e293b;
+  background: #f1f5f9; padding: 1px 6px; border-radius: 8px;
+}
+.total-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 8px; margin-top: 4px; border-top: 1px solid #e2e8f0;
+}
+.total-label { font-size: 11px; font-weight: 600; color: #475569; }
+.total-count { font-size: 13px; font-weight: 700; color: #1e293b; }
+#county-search, #search-input {
+  width: 100%; padding: 7px 9px; border: 1px solid #e2e8f0;
+  border-radius: 7px; font-size: 11px; outline: none; color: #334155;
+  margin-top: 2px;
+}
+#county-search:focus, #search-input:focus { border-color: #3b82f6; }
+#county-list {
+  max-height: 110px; overflow-y: auto; border: 1px solid #e2e8f0;
+  border-radius: 7px; font-size: 11px; margin-top: 4px;
+}
+.county-item {
+  padding: 5px 9px; cursor: pointer; color: #334155;
+  border-bottom: 1px solid #f8fafc;
+}
+.county-item:last-child { border-bottom: none; }
+.county-item:hover, .county-item:active { background: #eff6ff; }
+.county-item.selected { background: #dbeafe; color: #1d4ed8; font-weight: 600; }
+#county-clear {
+  font-size: 10px; color: #94a3b8; cursor: pointer; margin-top: 3px;
+  display: none; text-align: right;
+}
+#county-clear:hover { color: #ef4444; }
+#heatmap-btn {
+  width: 100%; padding: 7px; border-radius: 8px;
+  border: 1px solid #e2e8f0; background: white;
+  font-size: 11px; font-weight: 600; color: #475569;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 6px; transition: all 0.15s;
+  margin-top: 2px; -webkit-tap-highlight-color: transparent;
+}
+#heatmap-btn:hover { border-color: #f97316; color: #f97316; }
+#heatmap-btn.active { background: #fff7ed; border-color: #f97316; color: #f97316; }
+#search-results { margin-top: 3px; max-height: 100px; overflow-y: auto; }
+.sr-item { padding: 5px 7px; cursor: pointer; border-radius: 5px; font-size: 11px; color: #334155; }
+.sr-item:hover { background: #f1f5f9; }
+.sr-sub { font-size: 10px; color: #94a3b8; }
+
+/* EU PANEL */
+#eu-panel {
+  width: 340px; flex-shrink: 0; background: white;
+  border-left: 1px solid #e2e8f0; overflow-y: auto;
+  padding: 20px 16px; display: flex; flex-direction: column; gap: 16px;
+}
+.eu-header h1 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
+.eu-header p { font-size: 11px; color: #64748b; line-height: 1.4; }
+.stat-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-card {
+  background: #f8fafc; border-radius: 10px; padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+}
+.stat-card.highlight { background: #eff6ff; border-color: #bfdbfe; }
+.stat-value { font-size: 22px; font-weight: 800; color: #1e293b; line-height: 1; }
+.stat-value.blue { color: #2563eb; }
+.stat-value.green { color: #16a34a; }
+.stat-label { font-size: 10px; color: #64748b; margin-top: 3px; line-height: 1.3; }
+.trend-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 0; border-bottom: 1px solid #f1f5f9;
+}
+.trend-row:last-child { border-bottom: none; }
+.trend-year { font-size: 11px; color: #64748b; width: 36px; flex-shrink: 0; }
+.trend-bar-wrap { flex: 1; margin: 0 8px; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.trend-bar { height: 100%; border-radius: 4px; background: #3b82f6; }
+.trend-val { font-size: 11px; font-weight: 600; color: #2563eb; width: 42px; text-align: right; }
+.section-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: #94a3b8; margin-bottom: 8px;
+}
+.bar-chart { display: flex; flex-direction: column; gap: 3px; }
+.bar-row { display: flex; align-items: center; gap: 6px; }
+.bar-country { font-size: 10px; color: #475569; width: 68px; flex-shrink: 0; text-align: right; }
+.bar-country.ro { color: #2563eb; font-weight: 700; }
+.bar-wrap { flex: 1; height: 14px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; background: #cbd5e1; }
+.bar-fill.ro { background: #3b82f6; }
+.bar-val { font-size: 10px; color: #64748b; width: 36px; flex-shrink: 0; }
+.bar-val.ro { color: #2563eb; font-weight: 700; }
+.median-line-label { font-size: 10px; color: #d97706; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+.source-note { font-size: 9px; color: #94a3b8; line-height: 1.4; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+
+/* MOBILE-ONLY elements (hidden on desktop) */
+#fab-panel, #fab-eu, #overlay, #panel-close, #eu-close, #eu-drag-handle { display: none; }
+
+/* ── MOBILE LAYOUT ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body { flex-direction: column; }
+
+  #map-container { flex: 1; min-height: 0; }
+  #map { height: 100%; }
+
+  /* Timeline: larger touch targets */
+  #timeline { padding: 8px 12px; gap: 8px; }
+  #timeline label { display: none; }
+  .yr-btn { padding: 7px 14px; font-size: 12px; }
+  #timeline-count { font-size: 11px; }
+
+  /* Left panel: off-screen drawer */
   #map-panel {
-    position: absolute; top: 12px; left: 12px; z-index: 1000;
-    background: white; border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    padding: 14px; width: 236px;
+    position: fixed; top: 0; left: -280px; bottom: 0;
+    width: 280px; max-height: 100dvh; border-radius: 0;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+    transition: left 0.3s ease; z-index: 3000;
+    padding-top: 52px;
   }
-  #map-panel h2 { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
-  .mp-sub { font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
-  .sec-title {
-    font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.06em; color: #94a3b8; margin: 10px 0 5px;
-  }
-  .leg-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 4px 4px; cursor: pointer; border-radius: 6px;
-  }
-  .leg-row:hover { background: #f8fafc; }
-  .leg-left { display: flex; align-items: center; gap: 7px; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .leg-label { font-size: 11px; color: #334155; }
-  .leg-count {
-    font-size: 11px; font-weight: 600; color: #1e293b;
-    background: #f1f5f9; padding: 1px 6px; border-radius: 8px;
-  }
-  .total-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-top: 8px; margin-top: 4px; border-top: 1px solid #e2e8f0;
-  }
-  .total-label { font-size: 11px; font-weight: 600; color: #475569; }
-  .total-count { font-size: 13px; font-weight: 700; color: #1e293b; }
+  #map-panel.open { left: 0; }
 
-  /* County filter */
-  #county-search {
-    width: 100%; padding: 6px 8px; border: 1px solid #e2e8f0;
-    border-radius: 7px; font-size: 11px; outline: none; color: #334155;
-    margin-bottom: 4px;
-  }
-  #county-search:focus { border-color: #3b82f6; }
-  #county-list {
-    max-height: 110px; overflow-y: auto; border: 1px solid #e2e8f0;
-    border-radius: 7px; font-size: 11px;
-  }
-  .county-item {
-    padding: 4px 8px; cursor: pointer; color: #334155;
-    border-bottom: 1px solid #f8fafc;
-  }
-  .county-item:last-child { border-bottom: none; }
-  .county-item:hover { background: #eff6ff; }
-  .county-item.selected { background: #dbeafe; color: #1d4ed8; font-weight: 600; }
-  #county-clear {
-    font-size: 10px; color: #94a3b8; cursor: pointer; margin-top: 3px;
-    display: none; text-align: right;
-  }
-  #county-clear:hover { color: #ef4444; }
-
-  /* Heatmap toggle */
-  #heatmap-btn {
-    width: 100%; padding: 6px; border-radius: 8px;
-    border: 1px solid #e2e8f0; background: white;
-    font-size: 11px; font-weight: 600; color: #475569;
-    cursor: pointer; display: flex; align-items: center;
-    justify-content: center; gap: 6px; transition: all 0.15s;
-    margin-top: 2px;
-  }
-  #heatmap-btn:hover { border-color: #f97316; color: #f97316; }
-  #heatmap-btn.active { background: #fff7ed; border-color: #f97316; color: #f97316; }
-
-  /* Company search */
-  #search-input {
-    width: 100%; padding: 6px 8px; border: 1px solid #e2e8f0;
-    border-radius: 7px; font-size: 11px; outline: none; color: #334155;
-    margin-top: 2px;
-  }
-  #search-input:focus { border-color: #3b82f6; }
-  #search-results { margin-top: 3px; max-height: 100px; overflow-y: auto; }
-  .sr-item { padding: 4px 7px; cursor: pointer; border-radius: 5px; font-size: 11px; color: #334155; }
-  .sr-item:hover { background: #f1f5f9; }
-  .sr-sub { font-size: 10px; color: #94a3b8; }
-
-  /* EU PANEL */
+  /* EU panel: bottom sheet */
   #eu-panel {
-    width: 340px; flex-shrink: 0; background: white;
-    border-left: 1px solid #e2e8f0; overflow-y: auto;
-    padding: 20px 16px; display: flex; flex-direction: column; gap: 16px;
+    position: fixed; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 75dvh; max-height: 75dvh;
+    border-left: none; border-top: 1px solid #e2e8f0;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    z-index: 2000; padding-top: 12px;
   }
-  .eu-header h1 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
-  .eu-header p { font-size: 11px; color: #64748b; line-height: 1.4; }
-  .stat-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stat-card {
-    background: #f8fafc; border-radius: 10px; padding: 10px 12px;
-    border: 1px solid #e2e8f0;
+  #eu-panel.open { transform: translateY(0); }
+
+  /* Overlay backdrop */
+  #overlay {
+    display: block; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35); z-index: 2500;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
   }
-  .stat-card.highlight { background: #eff6ff; border-color: #bfdbfe; }
-  .stat-value { font-size: 22px; font-weight: 800; color: #1e293b; line-height: 1; }
-  .stat-value.blue { color: #2563eb; }
-  .stat-value.green { color: #16a34a; }
-  .stat-label { font-size: 10px; color: #64748b; margin-top: 3px; line-height: 1.3; }
-  .trend-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 0; border-bottom: 1px solid #f1f5f9;
+  #overlay.visible { opacity: 1; pointer-events: all; }
+
+  /* Floating action buttons */
+  #fab-panel {
+    display: flex; position: absolute; top: 12px; left: 12px; z-index: 1500;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: white; border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    align-items: center; justify-content: center;
+    font-size: 17px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
-  .trend-row:last-child { border-bottom: none; }
-  .trend-year { font-size: 11px; color: #64748b; width: 36px; flex-shrink: 0; }
-  .trend-bar-wrap { flex: 1; margin: 0 8px; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
-  .trend-bar { height: 100%; border-radius: 4px; background: #3b82f6; }
-  .trend-val { font-size: 11px; font-weight: 600; color: #2563eb; width: 42px; text-align: right; flex-shrink: 0; }
-  .section-label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.06em; color: #94a3b8; margin-bottom: 8px;
+  #fab-eu {
+    display: flex; position: absolute; bottom: 60px; right: 12px; z-index: 1500;
+    background: #2563eb; color: white; border: none;
+    border-radius: 22px; padding: 9px 14px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 3px 12px rgba(37,99,235,0.4);
+    align-items: center; gap: 6px;
+    -webkit-tap-highlight-color: transparent;
   }
-  .bar-chart { display: flex; flex-direction: column; gap: 3px; }
-  .bar-row { display: flex; align-items: center; gap: 6px; }
-  .bar-country { font-size: 10px; color: #475569; width: 68px; flex-shrink: 0; text-align: right; }
-  .bar-country.ro { color: #2563eb; font-weight: 700; }
-  .bar-wrap { flex: 1; height: 14px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; background: #cbd5e1; }
-  .bar-fill.ro { background: #3b82f6; }
-  .bar-val { font-size: 10px; color: #64748b; width: 36px; flex-shrink: 0; }
-  .bar-val.ro { color: #2563eb; font-weight: 700; }
-  .median-line-label { font-size: 10px; color: #d97706; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
-  .source-note { font-size: 9px; color: #94a3b8; line-height: 1.4; padding-top: 8px; border-top: 1px solid #f1f5f9; }
-  .leaflet-popup-content { min-width: 220px; font-size: 13px; line-height: 1.7; }
-  .leaflet-popup-content b { display: block; margin-bottom: 4px; }
+
+  /* Close buttons inside panels */
+  #panel-close, #eu-close {
+    display: flex; position: absolute;
+    background: #f1f5f9; border: none; border-radius: 50%;
+    width: 32px; height: 32px;
+    align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; color: #64748b;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #panel-close { top: 12px; right: 12px; z-index: 10; }
+  #eu-close { top: 12px; right: 12px; }
+
+  /* Drag handle for EU bottom sheet */
+  #eu-drag-handle {
+    display: block; width: 36px; height: 4px;
+    background: #e2e8f0; border-radius: 2px;
+    margin: 0 auto 12px; cursor: pointer;
+  }
+
+  .eu-header h1 { font-size: 15px; }
+  .stat-value { font-size: 20px; }
+  #county-list { max-height: 150px; }
+  #search-results { max-height: 120px; }
+}
+
+.leaflet-popup-content { min-width: 200px; font-size: 13px; line-height: 1.7; }
+.leaflet-popup-content b { display: block; margin-bottom: 4px; }
 </style>
 </head>
 <body>
 
-<!-- MAP SIDE -->
+<!-- MAP -->
 <div id="map-container">
   <div id="map"></div>
 
-  <!-- TIMELINE (bottom) -->
+  <!-- Mobile FABs (hidden on desktop) -->
+  <button id="fab-panel" onclick="openPanel()" title="Filtre">☰</button>
+  <button id="fab-eu" onclick="openEU()">📊 Context EU</button>
+
+  <!-- TIMELINE -->
   <div id="timeline">
     <label>📅 An înregistrare:</label>
     <div class="year-btns">
@@ -415,94 +507,120 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     </div>
     <span id="timeline-count"></span>
   </div>
-
-  <!-- LEFT PANEL -->
-  <div id="map-panel">
-    <h2>🗺️ Startup-uri Tech România</h2>
-    <div class="mp-sub">SRL/SA înregistrate 2024–2026 • ONRC + MFP</div>
-
-    <div class="sec-title">Categorie CAEN</div>
-    <div class="leg-row" onclick="toggleCat('product_publishing')">
-      <div class="leg-left">
-        <div class="dot" style="background:#a855f7" id="dot-product_publishing"></div>
-        <div class="leg-label">Software publishing</div>
-      </div>
-      <div class="leg-count" id="cnt-product_publishing">—</div>
-    </div>
-    <div class="leg-row" onclick="toggleCat('programming_consultancy')">
-      <div class="leg-left">
-        <div class="dot" style="background:#3b82f6" id="dot-programming_consultancy"></div>
-        <div class="leg-label">Programming &amp; consultancy</div>
-      </div>
-      <div class="leg-count" id="cnt-programming_consultancy">—</div>
-    </div>
-    <div class="leg-row" onclick="toggleCat('data_infrastructure')">
-      <div class="leg-left">
-        <div class="dot" style="background:#14b8a6" id="dot-data_infrastructure"></div>
-        <div class="leg-label">Data &amp; web infra</div>
-      </div>
-      <div class="leg-count" id="cnt-data_infrastructure">—</div>
-    </div>
-    <div class="total-row">
-      <span class="total-label">Total afișat</span>
-      <span class="total-count" id="cnt-total">—</span>
-    </div>
-
-    <div class="sec-title">Filtru județ</div>
-    <input type="text" id="county-search" placeholder="Caută județ...">
-    <div id="county-list"></div>
-    <div id="county-clear" onclick="clearCounty()">✕ Elimină filtru județ</div>
-
-    <div class="sec-title">Vizualizare</div>
-    <button id="heatmap-btn" onclick="toggleHeatmap()">🌡️ Heatmap densitate</button>
-
-    <div class="sec-title">Caută companie</div>
-    <input type="text" id="search-input" placeholder="Nume sau județ...">
-    <div id="search-results"></div>
-  </div>
 </div>
 
-<!-- EU PANEL -->
-<div id="eu-panel">
-  <div class="eu-header">
-    <h1>📊 Context European</h1>
-    <p>Rata de înregistrare a noilor companii ICT (NACE J) față de celelalte state membre UE — 2023</p>
+<!-- LEFT PANEL (drawer on mobile) -->
+<div id="map-panel">
+  <button id="panel-close" onclick="closePanel()">✕</button>
+  <h2>🗺️ Startup-uri Tech</h2>
+  <div class="mp-sub">SRL/SA înregistrate 2024–2026 • ONRC + MFP</div>
+
+  <div class="sec-title">Categorie CAEN</div>
+  <div class="leg-row" onclick="toggleCat('product_publishing')">
+    <div class="leg-left">
+      <div class="dot" style="background:#a855f7" id="dot-product_publishing"></div>
+      <div class="leg-label">Software publishing</div>
+    </div>
+    <div class="leg-count" id="cnt-product_publishing">—</div>
   </div>
-  <div>
+  <div class="leg-row" onclick="toggleCat('programming_consultancy')">
+    <div class="leg-left">
+      <div class="dot" style="background:#3b82f6" id="dot-programming_consultancy"></div>
+      <div class="leg-label">Programming &amp; consultancy</div>
+    </div>
+    <div class="leg-count" id="cnt-programming_consultancy">—</div>
+  </div>
+  <div class="leg-row" onclick="toggleCat('data_infrastructure')">
+    <div class="leg-left">
+      <div class="dot" style="background:#14b8a6" id="dot-data_infrastructure"></div>
+      <div class="leg-label">Data &amp; web infra</div>
+    </div>
+    <div class="leg-count" id="cnt-data_infrastructure">—</div>
+  </div>
+  <div class="total-row">
+    <span class="total-label">Total afișat</span>
+    <span class="total-count" id="cnt-total">—</span>
+  </div>
+
+  <div class="sec-title">Filtru județ</div>
+  <input type="text" id="county-search" placeholder="Caută județ...">
+  <div id="county-list"></div>
+  <div id="county-clear" onclick="clearCounty()">✕ Elimină filtru județ</div>
+
+  <div class="sec-title">Vizualizare</div>
+  <button id="heatmap-btn" onclick="toggleHeatmap()">🌡️ Heatmap densitate</button>
+
+  <div class="sec-title">Caută companie</div>
+  <input type="text" id="search-input" placeholder="Nume sau județ...">
+  <div id="search-results"></div>
+</div>
+
+<!-- EU PANEL (bottom sheet on mobile) -->
+<div id="eu-panel">
+  <div id="eu-drag-handle" onclick="closeEU()"></div>
+  <button id="eu-close" onclick="closeEU()">✕</button>
+  <div style="padding: 0 4px; overflow-y: auto;">
+    <div class="eu-header">
+      <h1>📊 Context European</h1>
+      <p>Rata de înregistrare a noilor companii ICT (NACE J) față de celelalte state membre UE — 2023</p>
+    </div>
+    <div style="height:14px"></div>
     <div class="section-label">România în cifre</div>
     <div class="stat-cards" id="stat-cards"></div>
-  </div>
-  <div>
+    <div style="height:14px"></div>
     <div class="section-label">Tendință România (NACE J)</div>
     <div id="trend-chart"></div>
-  </div>
-  <div>
+    <div style="height:14px"></div>
     <div class="section-label">Clasament UE27 — Rata naștere companii ICT 2023</div>
     <div class="bar-chart" id="bar-chart"></div>
     <div class="median-line-label">
       <span style="display:inline-block;width:12px;height:3px;background:#fbbf24;border-radius:2px"></span>
       Mediana UE27
     </div>
-  </div>
-  <div class="source-note">
-    Sursa date EU: Eurostat, Business demography by size class and NACE Rev.2 (bd_size), 2023.<br>
-    Indicatorul ENT_BRTHR_PC = rata naștere întreprinderi (noi firme / firme active × 100).<br>
-    Sursa date harta: ONRC + MFP via data.gov.ro.
+    <div style="height:14px"></div>
+    <div class="source-note">
+      Sursa date EU: Eurostat, Business demography by size class and NACE Rev.2 (bd_size), 2023.<br>
+      Indicatorul ENT_BRTHR_PC = rata naștere întreprinderi (noi firme / firme active × 100).<br>
+      Sursa date harta: ONRC + MFP via data.gov.ro.
+    </div>
   </div>
 </div>
+
+<!-- Backdrop overlay (mobile) -->
+<div id="overlay" onclick="closeAll()"></div>
 
 <script>
 const MAP_DATA = __MAP_DATA__;
 const EU_DATA  = __EU_DATA__;
 const COUNTIES = __COUNTIES__;
 
-// ── STATE ─────────────────────────────────────────────────────
-const state = {
-  catVisible: { product_publishing:true, programming_consultancy:true, data_infrastructure:true },
-  selectedCounty: null,
-  selectedYear: null,
-  heatmapOn: false,
-};
+// ── MOBILE PANEL CONTROLS ─────────────────────────────────────
+const overlay = document.getElementById('overlay');
+
+function openPanel() {
+  document.getElementById('map-panel').classList.add('open');
+  overlay.classList.add('visible');
+}
+function closePanel() {
+  document.getElementById('map-panel').classList.remove('open');
+  if (!document.getElementById('eu-panel').classList.contains('open')) {
+    overlay.classList.remove('visible');
+  }
+}
+function openEU() {
+  document.getElementById('eu-panel').classList.add('open');
+  overlay.classList.add('visible');
+}
+function closeEU() {
+  document.getElementById('eu-panel').classList.remove('open');
+  if (!document.getElementById('map-panel').classList.contains('open')) {
+    overlay.classList.remove('visible');
+  }
+}
+function closeAll() {
+  closePanel(); closeEU();
+  overlay.classList.remove('visible');
+}
 
 // ── MAP SETUP ─────────────────────────────────────────────────
 const map = L.map('map', { preferCanvas: true }).setView([45.9432, 24.9668], 7);
@@ -528,7 +646,6 @@ function makeIcon(color) {
   });
 }
 
-// Build cluster groups per category
 const clusterGroups = {};
 Object.keys(COLORS).forEach(cat => {
   clusterGroups[cat] = L.markerClusterGroup({
@@ -548,19 +665,24 @@ Object.keys(COLORS).forEach(cat => {
   });
 });
 
-// Build marker objects (don't add to map yet)
 const allMarkers = MAP_DATA.map(d => {
   const cat = d.category||'uncategorised';
   const marker = L.marker([d.lat, d.lon], {icon: makeIcon(COLORS[cat]||'#94a3b8')})
-    .bindPopup(d.popup, {maxWidth:300});
+    .bindPopup(d.popup, {maxWidth:280});
   marker._data = d;
   return marker;
 });
 
-// Heatmap layer
 let heatLayer = null;
 
-// ── FILTER & RENDER ───────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────────
+const state = {
+  catVisible: { product_publishing:true, programming_consultancy:true, data_infrastructure:true },
+  selectedCounty: null,
+  selectedYear: null,
+  heatmapOn: false,
+};
+
 function getVisible() {
   return allMarkers.filter(m => {
     const d = m._data;
@@ -573,34 +695,24 @@ function getVisible() {
 
 function applyFilters() {
   const visible = getVisible();
-
-  // Clear all cluster groups
   Object.values(clusterGroups).forEach(cl => {
     if (map.hasLayer(cl)) map.removeLayer(cl);
     cl.clearLayers();
   });
-
-  // Repopulate with visible markers
   visible.forEach(m => {
-    const cat = m._data.category || 'uncategorised';
+    const cat = m._data.category||'uncategorised';
     if (clusterGroups[cat]) clusterGroups[cat].addLayer(m);
   });
-
-  // Add visible cluster groups back to map
-  const cats = Object.keys(state.catVisible);
-  cats.forEach(cat => {
-    if (state.catVisible[cat] && clusterGroups[cat].getLayers().length > 0) {
+  Object.keys(state.catVisible).forEach(cat => {
+    if (state.catVisible[cat] && clusterGroups[cat] && clusterGroups[cat].getLayers().length > 0) {
       map.addLayer(clusterGroups[cat]);
     }
   });
-
-  // Update heatmap
   if (state.heatmapOn) {
     if (heatLayer) map.removeLayer(heatLayer);
     const pts = visible.map(m => [m._data.lat, m._data.lon, 0.6]);
     heatLayer = L.heatLayer(pts, {radius:25, blur:15, maxZoom:14}).addTo(map);
   }
-
   updateCounts(visible);
 }
 
@@ -608,9 +720,8 @@ function updateCounts(visible) {
   const catCounts = {};
   visible.forEach(m => {
     const cat = m._data.category||'uncategorised';
-    catCounts[cat] = (catCounts[cat]||0) + 1;
+    catCounts[cat] = (catCounts[cat]||0)+1;
   });
-
   let total = 0;
   ['product_publishing','programming_consultancy','data_infrastructure'].forEach(cat => {
     const n = catCounts[cat]||0;
@@ -623,27 +734,22 @@ function updateCounts(visible) {
     if (vis) total += n;
   });
   document.getElementById('cnt-total').textContent = total.toLocaleString('ro');
-  document.getElementById('timeline-count').textContent =
-    `${visible.length.toLocaleString('ro')} companii`;
+  document.getElementById('timeline-count').textContent = `${visible.length.toLocaleString('ro')} companii`;
 }
 
-// ── CATEGORY TOGGLE ───────────────────────────────────────────
 function toggleCat(cat) {
   state.catVisible[cat] = !state.catVisible[cat];
   applyFilters();
 }
 
-// ── TIMELINE ──────────────────────────────────────────────────
 function setYear(yr) {
   state.selectedYear = yr;
-  document.querySelectorAll('.yr-btn').forEach(b => b.classList.remove('active'));
-  const btns = document.querySelectorAll('.yr-btn');
-  const idx = yr === null ? 0 : yr - 2023;
-  if (btns[idx]) btns[idx].classList.add('active');
+  document.querySelectorAll('.yr-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === (yr===null?0:yr-2023));
+  });
   applyFilters();
 }
 
-// ── COUNTY FILTER ─────────────────────────────────────────────
 function renderCountyList(filter) {
   const list = document.getElementById('county-list');
   const q = (filter||'').toLowerCase();
@@ -657,13 +763,9 @@ function renderCountyList(filter) {
 }
 
 function selectCounty(name) {
-  if (state.selectedCounty === name) {
-    state.selectedCounty = null;
-  } else {
-    state.selectedCounty = name;
-  }
+  state.selectedCounty = (state.selectedCounty===name) ? null : name;
   const clearEl = document.getElementById('county-clear');
-  clearEl.style.display = state.selectedCounty ? 'block' : 'none';
+  clearEl.style.display = state.selectedCounty?'block':'none';
   renderCountyList(document.getElementById('county-search').value);
   applyFilters();
 }
@@ -680,27 +782,20 @@ document.getElementById('county-search').addEventListener('input', function() {
   renderCountyList(this.value);
 });
 
-// ── HEATMAP TOGGLE ────────────────────────────────────────────
 function toggleHeatmap() {
   state.heatmapOn = !state.heatmapOn;
-  const btn = document.getElementById('heatmap-btn');
-  btn.classList.toggle('active', state.heatmapOn);
-
-  if (!state.heatmapOn && heatLayer) {
-    map.removeLayer(heatLayer);
-    heatLayer = null;
-  }
+  document.getElementById('heatmap-btn').classList.toggle('active', state.heatmapOn);
+  if (!state.heatmapOn && heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
   applyFilters();
 }
 
-// ── COMPANY SEARCH ────────────────────────────────────────────
 document.getElementById('search-input').addEventListener('input', function() {
   const q = this.value.toLowerCase().trim();
   const res = document.getElementById('search-results');
   res.innerHTML = '';
   if (q.length < 2) return;
   const hits = allMarkers
-    .filter(m => m._data.name.toLowerCase().includes(q) || m._data.judet.toLowerCase().includes(q))
+    .filter(m => m._data.name.toLowerCase().includes(q)||m._data.judet.toLowerCase().includes(q))
     .slice(0,10);
   if (!hits.length) {
     res.innerHTML = '<div class="sr-item" style="color:#94a3b8">Niciun rezultat</div>';
@@ -711,8 +806,9 @@ document.getElementById('search-input').addEventListener('input', function() {
     el.className = 'sr-item';
     el.innerHTML = `${m._data.name}<div class="sr-sub">${m._data.judet_norm||m._data.judet}</div>`;
     el.onclick = () => {
-      map.setView(m.getLatLng(), 16); m.openPopup();
+      map.setView(m.getLatLng(),16); m.openPopup();
       res.innerHTML = ''; document.getElementById('search-input').value = '';
+      closePanel();
     };
     res.appendChild(el);
   });
@@ -742,11 +838,7 @@ document.getElementById('stat-cards').innerHTML = `
   </div>
 `;
 
-const years = [
-  {yr:'2021', val:ro.value_2021},
-  {yr:'2022', val:ro.value_2022},
-  {yr:'2023', val:ro.value_2023},
-];
+const years = [{yr:'2021',val:ro.value_2021},{yr:'2022',val:ro.value_2022},{yr:'2023',val:ro.value_2023}];
 const maxTrend = Math.max(...years.map(y=>y.val||0));
 document.getElementById('trend-chart').innerHTML = years.map(y=>`
   <div class="trend-row">
