@@ -154,6 +154,6 @@ Open `startup_map.html` in any browser. No server required.
 
 ## Author
 
-Built by [Dana Juncu](https://github.com/danajuncu) — Senior Product Manager at Diconium, working at the intersection of data, product, and the Romanian tech ecosystem.
+Built by [Dana Juncu](https://github.com/dana-juncu) — Senior Product Manager at Diconium, working at the intersection of data, product, and the Romanian tech ecosystem.
 
 Data sourced from ONRC, MFP, and Eurostat under open data licenses. Map tiles © OpenStreetMap contributors.
