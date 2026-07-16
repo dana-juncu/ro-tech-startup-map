@@ -4,6 +4,7 @@ An interactive map of newly registered tech companies in Romania (2024–2026), 
 
 ![Map preview showing tech company distribution across Romania with EU comparison panel](preview.png)
 
+🔗 **[Live map](https://dana-juncu.github.io/ro-tech-startup-map/startup_map.html)**
 ---
 
 ## What this shows
